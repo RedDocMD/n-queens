@@ -1,3 +1,6 @@
+use rand::prelude::*;
+use std::fmt::{Display, Formatter, Result};
+
 pub struct Board {
   size: usize,
   board: Vec<Vec<bool>>
@@ -43,6 +46,26 @@ impl Board {
   }
 
   pub fn randomly_fill(self: &mut Self) {
-    let mut source: Vec<usize> = (0..(self.size * self.size)).collect();
+    for j in 0..self.size {
+      let i: usize = random();
+      self.board[i % self.size][j] = true;
+    }
+  }
+}
+
+impl Display for Board {
+  fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+    let mut output = String::new();
+    for row in &self.board {
+      for cell in row {
+        let mut val = '.';
+        if *cell {
+          val = 'Q';
+        }
+        output.push_str(&format!("{} ", val));
+      }
+      output.push('\n');
+    }
+    write!(f, "{}", output)
   }
 }
