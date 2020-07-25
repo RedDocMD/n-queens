@@ -3,8 +3,10 @@ use std::fmt::{Display, Formatter, Result};
 
 pub struct Board {
   size: usize,
-  board: Vec<Vec<bool>>
+  board: Vec<Vec<bool>>,
 }
+
+pub type Position = (usize, usize);
 
 impl Board {
   pub fn new(size: usize) -> Self {
@@ -32,92 +34,27 @@ impl Board {
     }
   }
 
-  pub fn is_goal(&self) -> bool {
-    // Row-wise
+  fn all_queens(&self) -> Vec<(usize, usize)> {
+    let mut positions = Vec::new();
     for i in 0..self.size {
-      let mut cnt = 0;
       for j in 0..self.size {
         if self.board[i][j] {
-          cnt += 1
-        }
-        if cnt > 1 {
-          return false;
+          positions.push((i, j));
         }
       }
     }
+    return positions;
+  }
 
-    // Column-wise
+  pub fn is_goal(&self) -> bool {
+    let queens = self.all_queens();
     for i in 0..self.size {
-      let mut cnt = 0;
-      for j in 0..self.size {
-        if self.board[j][i] {
-          cnt += 1
-        }
-        if cnt > 1 {
+      for j in (i + 1)..self.size {
+        if is_in_line(&queens[i], &queens[j]) {
           return false;
         }
       }
     }
-
-    // Diagonals
-    for i in 0..self.size {
-      let mut ii = i;
-      let mut jj = 0;
-      let mut cnt = 0;
-
-      while ii < self.size && jj < self.size {
-        if self.board[ii][jj] {
-          cnt += 1;
-        }
-        if cnt > 1 {
-          return false;
-        }
-        ii += 1; jj += 1;
-      }
-
-      while jj < self.size {
-        if self.board[ii][jj] {
-          cnt += 1;
-        }
-        if cnt > 1 {
-          return false;
-        }
-        if ii == 0 {
-          break;
-        }
-        ii -= 1; jj += 1;
-      }
-    }
-
-    for j in 0..self.size {
-      let mut ii = 0;
-      let mut jj = j;
-      let mut cnt = 0;
-
-      while ii < self.size && jj < self.size {
-        if self.board[ii][jj] {
-          cnt += 1;
-        }
-        if cnt > 1 {
-          return false;
-        }
-        ii += 1; jj += 1;
-      }
-
-      while jj < self.size {
-        if self.board[ii][jj] {
-          cnt += 1;
-        }
-        if cnt > 1 {
-          return false;
-        }
-        if ii == 0 {
-          break;
-        }
-        ii -= 1; jj += 1;
-      }
-    }
-
     return true;
   }
 }
@@ -137,4 +74,29 @@ impl Display for Board {
     }
     write!(f, "{}", output)
   }
+}
+
+fn is_in_line(pos1: &Position, pos2: &Position) -> bool {
+  let x1 = pos1.0 as isize;
+  let x2 = pos2.0 as isize;
+  let y1 = pos1.1 as isize;
+  let y2 = pos2.1 as isize;
+
+  x1 == x2 || y1 == y2 || (x1 - x2).abs() == (y1 - y2).abs()
+}
+
+#[test]
+fn goal_check() {
+    let mut solved = Board::new(8);
+
+    solved.board[0][5] = true;
+    solved.board[1][3] = true;
+    solved.board[2][6] = true;
+    solved.board[3][0] = true;
+    solved.board[4][7] = true;
+    solved.board[5][1] = true;
+    solved.board[6][4] = true;
+    solved.board[7][2] = true;
+
+    assert!(solved.is_goal());
 }
