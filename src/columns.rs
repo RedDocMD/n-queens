@@ -28,6 +28,10 @@ impl ColumnBoard {
     self.heuristic == 0
   }
 
+  pub fn heuristic(&self) -> i32 {
+    self.heuristic
+  }
+
   // Call after changing queen in 'column' from 'old_row'
   fn recalculate_heuristic(&mut self, column: usize, old_row: usize) {
     let mut old_contrib = 0;
