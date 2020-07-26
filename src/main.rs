@@ -1,7 +1,13 @@
 use nqueens::*;
+use std::env::args;
 
 fn main() {
-    let size = 30;
+    let size: usize;
+    if let Some(num) = args().nth(1) {
+      size = num.parse().unwrap();
+    } else {
+      size = 8;
+    }
     let (moves, solution) = restart_hill_climb(size);
     assert!(solution.is_goal());
     println!("{}", solution);
