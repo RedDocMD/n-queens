@@ -1,6 +1,6 @@
+use crate::utils::*;
 use rand::prelude::*;
 use std::fmt::{Display, Formatter, Result};
-use crate::utils::*;
 
 #[derive(Debug)]
 pub struct Board {
@@ -63,7 +63,7 @@ impl Board {
     let queens = self.all_queens();
     for i in 0..self.size {
       for j in (i + 1)..self.size {
-        if is_in_line(&queens[i], &queens[j]) {
+        if is_in_line(queens[i], queens[j]) {
           return false;
         }
       }
@@ -76,7 +76,7 @@ impl Board {
     let queens = self.all_queens();
     for i in 0..self.size {
       for j in (i + 1)..self.size {
-        if is_in_line(&queens[i], &queens[j]) {
+        if is_in_line(queens[i], queens[j]) {
           cnt += 1;
         }
       }
@@ -91,7 +91,6 @@ impl Board {
 
     let mut min_heuristic = (2 * size * size) as i32;
     let mut position = (current_queens[0], 0);
-    
     let mut next_board = self;
 
     for column in 0..size {
@@ -100,8 +99,8 @@ impl Board {
       for row in 0..size {
         if row != current {
           next_board.board[row][column] = true;
-          let heuristic = next_board.attacking_heuristic(); 
-          if  heuristic < min_heuristic {
+          let heuristic = next_board.attacking_heuristic();
+          if heuristic < min_heuristic {
             position = (row, column);
             min_heuristic = heuristic;
           }
@@ -162,17 +161,17 @@ impl Display for Board {
 
 #[test]
 fn goal_check() {
-    let mut solved = Board::new(8);
+  let mut solved = Board::new(8);
 
-    solved.board[0][5] = true;
-    solved.board[1][3] = true;
-    solved.board[2][6] = true;
-    solved.board[3][0] = true;
-    solved.board[4][7] = true;
-    solved.board[5][1] = true;
-    solved.board[6][4] = true;
-    solved.board[7][2] = true;
+  solved.board[0][5] = true;
+  solved.board[1][3] = true;
+  solved.board[2][6] = true;
+  solved.board[3][0] = true;
+  solved.board[4][7] = true;
+  solved.board[5][1] = true;
+  solved.board[6][4] = true;
+  solved.board[7][2] = true;
 
-    assert!(solved.is_goal());
-    assert_eq!(solved.attacking_heuristic(), 0);
+  assert!(solved.is_goal());
+  assert_eq!(solved.attacking_heuristic(), 0);
 }
