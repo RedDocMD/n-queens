@@ -106,12 +106,16 @@ impl Board {
       }
       next_board.board[current][column] = true;
     }
-    if !self.board[position.0][position.1] {
-      let current = current_queens[position.1];
-      next_board.board[current][position.1] = false;
-      next_board.board[position.0][position.1] = true;
+
+    let current = current_queens[position.1];
+    next_board.board[current][position.1] = false;
+    next_board.board[position.0][position.1] = true;
+
+    if next_board.attacking_heuristic() >= self.attacking_heuristic() {
+      return self.clone();
+    } else {
+      return next_board;
     }
-    return next_board;
   }
 
   pub fn check_board(&self) -> bool {
