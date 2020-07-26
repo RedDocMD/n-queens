@@ -1,7 +1,7 @@
 use rand::prelude::*;
 use std::fmt::{Display, Formatter, Result};
 
-#[derive(Eq, PartialEq, Debug)]
+#[derive(Debug)]
 pub struct Board {
   size: usize,
   board: Vec<Vec<bool>>,
@@ -85,15 +85,18 @@ impl Board {
     return cnt;
   }
 
-  pub fn best_neighbor(&self) -> Self {
-    let mut next_board = self.clone();
-    let mut min_heuristic = (2 * self.size * self.size) as i32;
+  pub fn best_neighbor(self) -> Self {
+    let size = self.size;
     let current_queens = self.columnwise_queens();
+    let old_heuristic = self.attacking_heuristic();
+    let mut min_heuristic = (2 * size * size) as i32;
     let mut position = (current_queens[0], 0);
-    for column in 0..self.size {
+    let mut next_board = self;
+
+    for column in 0..size {
       let current = current_queens[column];
       next_board.board[current][column] = false;
-      for row in 0..self.size {
+      for row in 0..size {
         if row != current {
           next_board.board[row][column] = true;
           let heuristic = next_board.attacking_heuristic(); 
@@ -111,11 +114,11 @@ impl Board {
     next_board.board[current][position.1] = false;
     next_board.board[position.0][position.1] = true;
 
-    if next_board.attacking_heuristic() >= self.attacking_heuristic() {
-      return self.clone();
-    } else {
-      return next_board;
+    if next_board.attacking_heuristic() >= old_heuristic {
+      next_board.board[current][position.1] = true;
+      next_board.board[position.0][position.1] = false;
     }
+    return next_board;
   }
 
   pub fn check_board(&self) -> bool {
@@ -156,17 +159,6 @@ impl Display for Board {
   }
 }
 
-impl Clone for Board {
-  fn clone(&self) -> Self {
-    let mut new_board = Board::new(self.size);
-    let queens = self.all_queens();
-    for queen in queens {
-      new_board.board[queen.0][queen.1] = true;
-    }
-    return new_board;
-  }
-}
-
 fn is_in_line(pos1: &Position, pos2: &Position) -> bool {
   let x1 = pos1.0 as isize;
   let x2 = pos2.0 as isize;
@@ -191,11 +183,4 @@ fn goal_check() {
 
     assert!(solved.is_goal());
     assert_eq!(solved.attacking_heuristic(), 0);
-}
-
-#[test]
-fn eq_check() {
-    let board = Board::randomly_filled_board(10);
-    let cloned_board = board.clone();
-    assert_eq!(board, cloned_board);
 }
