@@ -89,8 +89,10 @@ impl Board {
     let size = self.size;
     let current_queens = self.columnwise_queens();
     let old_heuristic = self.attacking_heuristic();
+
     let mut min_heuristic = (2 * size * size) as i32;
     let mut position = (current_queens[0], 0);
+    
     let mut next_board = self;
 
     for column in 0..size {
