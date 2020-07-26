@@ -1,6 +1,7 @@
 use rand::prelude::*;
 use std::fmt::{Display, Formatter, Result};
 
+#[derive(Eq, PartialEq, Debug)]
 pub struct Board {
   size: usize,
   board: Vec<Vec<bool>>,
@@ -34,7 +35,7 @@ impl Board {
     }
   }
 
-  fn all_queens(&self) -> Vec<(usize, usize)> {
+  fn all_queens(&self) -> Vec<Position> {
     let mut positions = Vec::new();
     for i in 0..self.size {
       for j in 0..self.size {
@@ -44,6 +45,19 @@ impl Board {
       }
     }
     return positions;
+  }
+
+  fn columnwise_queens(&self) -> Vec<usize> {
+    let mut queens = Vec::new();
+    for column in 0..self.size {
+      for row in 0..self.size {
+        if self.board[row][column] {
+          queens.push(row);
+          break;
+        }
+      }
+    }
+    return queens;
   }
 
   pub fn is_goal(&self) -> bool {
@@ -56,6 +70,46 @@ impl Board {
       }
     }
     return true;
+  }
+
+  pub fn attacking_heuristic(&self) -> i32 {
+    let mut cnt = 0;
+    let queens = self.all_queens();
+    for i in 0..self.size {
+      for j in (i + 1)..self.size {
+        if is_in_line(&queens[i], &queens[j]) {
+          cnt += 1;
+        }
+      }
+    }
+    return cnt;
+  }
+
+  pub fn best_neighbor(&self) -> Self {
+    let mut next_board = self.clone();
+    let mut min_heuristic = self.attacking_heuristic();
+    let current_queens = self.columnwise_queens();
+    let mut position = (0, current_queens[0]);
+    for column in 0..self.size {
+      let current = current_queens[column];
+      next_board.board[current][column] = false;
+      for row in 0..self.size {
+        if row != current {
+          next_board.board[row][column] = true;
+          let heuristic = next_board.attacking_heuristic(); 
+          if  heuristic < min_heuristic {
+            position = (row, column);
+            min_heuristic = heuristic;
+          }
+          next_board.board[row][column] = false;
+        }
+      }
+      next_board.board[current][column] = true;
+    }
+    if !self.board[position.0][position.1] {
+      next_board.board[position.0][position.1] = true;
+    }
+    return next_board;
   }
 }
 
@@ -73,6 +127,17 @@ impl Display for Board {
       output.push('\n');
     }
     write!(f, "{}", output)
+  }
+}
+
+impl Clone for Board {
+  fn clone(&self) -> Self {
+    let mut new_board = Board::new(self.size);
+    let queens = self.all_queens();
+    for queen in queens {
+      new_board.board[queen.0][queen.1] = true;
+    }
+    return new_board;
   }
 }
 
@@ -99,4 +164,12 @@ fn goal_check() {
     solved.board[7][2] = true;
 
     assert!(solved.is_goal());
+    assert_eq!(solved.attacking_heuristic(), 0);
+}
+
+#[test]
+fn eq_check() {
+    let board = Board::randomly_filled_board(10);
+    let cloned_board = board.clone();
+    assert_eq!(board, cloned_board);
 }
