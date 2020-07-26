@@ -87,9 +87,9 @@ impl Board {
 
   pub fn best_neighbor(&self) -> Self {
     let mut next_board = self.clone();
-    let mut min_heuristic = self.attacking_heuristic();
+    let mut min_heuristic = (2 * self.size * self.size) as i32;
     let current_queens = self.columnwise_queens();
-    let mut position = (0, current_queens[0]);
+    let mut position = (current_queens[0], 0);
     for column in 0..self.size {
       let current = current_queens[column];
       next_board.board[current][column] = false;
@@ -107,9 +107,31 @@ impl Board {
       next_board.board[current][column] = true;
     }
     if !self.board[position.0][position.1] {
+      let current = current_queens[position.1];
+      next_board.board[current][position.1] = false;
       next_board.board[position.0][position.1] = true;
     }
     return next_board;
+  }
+
+  pub fn check_board(&self) -> bool {
+    let queens = self.all_queens();
+    if queens.len() != self.size {
+      return false;
+    } else {
+      for column in 0..self.size {
+        let mut cnt = 0;
+        for queen in &queens {
+          if queen.1 == column {
+            cnt += 1;
+          }
+        }
+        if cnt != 1 {
+          return false;
+        }
+      }
+      return true;
+    }
   }
 }
 
