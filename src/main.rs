@@ -1,4 +1,4 @@
-use nqueens::*;
+use nqueens::board::*;
 use std::env::args;
 
 fn main() {
