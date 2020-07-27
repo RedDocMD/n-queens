@@ -1,13 +1,43 @@
 # N-Queens problem
+
 This solves the N-Queen problem using **hill-climbing** with *random-restart* when a plateau is reached.
 
-### Running 
-To run the un-optimized build, execute `cargo run --bin nqueens <number>`, where `number` is the number of queens you want.
+The following variants of the above algorithm have been implemented (they differ in the manner the data is represented as well as the method used to find the subsequent neighbor):
 
-### Building 
-To build the project, run `cargo build --release`. The built binary will be produced as `target/release/nqueens`. Run is as `target/release/nqueens <number>`, where `number` is the number of queens you want.
+1. Square board, tiles move vertically
+2. Linearized board, tiles move vertically
+3. QS1 algorithm
+
+## Running
+
+### Building
+
+To build the project, run `cargo build --release`. The binaries will be produced under `target/release`.
+
+### Options
+
+The binaries take in the number of queens as a command-line arg. So run the binaries as `target/release/<binary> <number>`.
 
 ### Dependencies
+
 This project is written in **Rust** ([Rust home page](https://www.rust-lang.org)).
 
 You need to have `cargo` in your `PATH`. Check install instructions [here](https://www.rust-lang.org/tools/install).
+
+## Algorithms
+
+### Square board, tiles move vertically
+
+In this variant, a 2D vector of booleans is used to represent the board, with a `true` representing a queen at that position. The initial board is created by placing the queens in a random row, one per column. (Note that this introduces row-conflicts in addition to diagonal conflicts. Without these initial row-conflicts, however, it was observed that many more random restarts were required).
+
+At each move, `n(n -1)` possible successors are explored. A successor is obtained by shifting a queen vertically. The best possible successor is chosen. If it has a better value than the current state, then it becomes the current state. Else the search restarts from a new random position.
+
+#### Heuristic
+
+The heuristic used here is the *total* number of pairs queens conflicting each other, either *directly or indirectly*. So for an instance, if there are 4 queens in a row, that contributes 6 (`C(4, 2)`) to the heuristic value. Also, note that the goal state has a heuristic value of 0, making this algorithm more properly *valley-descending*, rather than hill-climbing.
+
+The binary for this variant is `full_board`.
+
+### Linearized board, tiles move vertically
+
+In this, variant the board is represented as a vector of positions, where the value is the ith element represents the row the queen in the ith column is in. As a consequence, the heuristic is calculated based on the previous value of the heuristic, in O(n) time, as compared to O(n^2) time in the previous variant.
