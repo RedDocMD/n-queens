@@ -34,10 +34,26 @@ At each move, `n(n -1)` possible successors are explored. A successor is obtaine
 
 #### Heuristic
 
-The heuristic used here is the *total* number of pairs queens conflicting each other, either *directly or indirectly*. So for an instance, if there are 4 queens in a row, that contributes 6 (`C(4, 2)`) to the heuristic value. Also, note that the goal state has a heuristic value of 0, making this algorithm more properly *valley-descending*, rather than hill-climbing.
+The heuristic used here is the *total* number of pairs queens conflicting each other, either *directly or indirectly*. So for an instance, if there are 4 queens in a line, that contributes 6 (`C(4, 2)`) to the heuristic value. Also, note that the goal state has a heuristic value of 0, making this algorithm more properly *valley-descending*, rather than hill-climbing.
 
 The binary for this variant is `full_board`.
 
 ### Linearized board, tiles move vertically
 
-In this, variant the board is represented as a vector of positions, where the value is the ith element represents the row the queen in the ith column is in. As a consequence, the heuristic is calculated based on the previous value of the heuristic, in O(n) time, as compared to O(n^2) time in the previous variant.
+In this, variant the board is represented as a vector of positions, where the value is the ith element represents the row the queen in the ith column is in. As a consequence, the heuristic is calculated based on the previous value of the heuristic, in O(n) time, as compared to O(n^2) time in the previous variant. Also the goal test is reduced to O(1) time from the O(n^2) from the previous variant.
+
+#### Heuristic
+
+Same as the previous variant.
+
+The binary for this variant is `linear_board`.
+
+### QS1 algorithm
+
+This has been taken from Sosic and Gu ([https://doi.org/10.1145/101340.101343](https://doi.org/10.1145/101340.101343)). The board is represented as the same linearized format as above. The initial random permutation, however, is guaranteed to have neither row conflicts nor column conflicts. The local search proceeds by comparing all pairs of queens. If one of them is currently attacked, then those two queens are swapped, iff the swap will improve the heuristic. The process of recalculating the heuristic in O(1) time has been described in the paper.
+
+#### Heuristic
+
+In this variant, the heuristic is the *total* number of pairs of queens in **direct** conflict.
+
+The binary for this variant is `qs1`.
