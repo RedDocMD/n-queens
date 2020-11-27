@@ -25,9 +25,10 @@ pip3 install termcolor
 python3 test_run.py
 ```
 
-Alternatively, if you have [Docker](https://www.docker.com/) installed, you can run the above script as a container, with:
+Alternatively, if you have [Docker](https://www.docker.com/) installed, you can run the above script in a container, with:
 ```
-docker run --rm redocmd/n-queens
+docker run -it --rm redocmd/n-queens:latest
+root@9443f1908613:/usr/src/n-queens# python3 test_run.py
 ```
 
 ### Dependencies
