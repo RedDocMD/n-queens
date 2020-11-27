@@ -16,7 +16,19 @@ To build the project, run `cargo build --release`. The binaries will be produced
 
 ### Options
 
-The binaries take in the number of queens as a command-line arg. So run the binaries as `target/release/<binary> <number>`.
+The binaries take in the number of queens as a command-line arg. So run the binaries as `target/release/<binary> <number-of-queens>`.
+
+### Demo run
+Also you can get a brief idea of the comparative performances of the three algorithms by using `test_run.py`, if you have Python3 and *termcolor* installed.
+```
+pip3 install termcolor
+python3 test_run.py
+```
+
+Alternatively, if you have [Docker](https://www.docker.com/) installed, you can run the above script as a container, with:
+```
+docker run --rm redocmd/n-queens
+```
 
 ### Dependencies
 
